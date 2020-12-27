@@ -1,0 +1,149 @@
+<html>
+    <head>
+    	<meta charset="UTF-8">
+        <title>Cadastro de Usuários</title>
+       	<link rel="stylesheet" href="css/style.css">
+       
+        <script src="https://unpkg.com/vue"></script>
+        <!--pesquisar no npmjs.com por vue-resource para trabalhar com http -->
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+        
+
+    </head>
+
+
+    <body>
+        <section>
+        <h2>Cadastro de Usuários</h2>
+        <div id="app">
+            <form>
+                <label>Usuário</label>
+                <!-- v-model relaciona o nome digitado com usuario.nome -->
+                <input type="text" name="nome"  v-model="usuario.nome">
+                <label>Senha</label>
+                 <!-- v-model relaciona a senha digitada com usuario.senha -->
+                <input type="text" name="senha"  v-model="usuario.senha">
+                <label>Perfil</label>
+                 <!-- v-model relaciona o perfil selecionado usuario.perfil (objeto) -->
+                <select v-model="usuario.perfil">
+                    <option disabled ></option>
+                    <!-- o value é o objeto perfil-->
+                    <option v-for="perfil in perfis" v-bind:value="perfil">{{perfil.descricao}}</option>
+                </select>
+                <br><br>
+               
+                <button type="button" v-on:click="salvar(usuario)">Salvar</button> 
+                <!-- com o type button ele só toma açaõ após ser definada uma ação para o botão, caso contrario ele fara como se fosse um submit do form-->
+
+                <button type="button" v-on:click="novo">Cancelar</button>
+            </form>
+            <table id="tabelaUsuarios">
+                <tr><th>Id</th><th>Usuário</th><th>Senha</th><th>Perfil</th><th></th></tr>
+                <tr v-for="usuario in usuarios">
+                   <td>{{ usuario.id }}</td>
+                   <td>{{ usuario.nome }}</td>
+                   <td>{{ usuario.senha }}</td>
+                   <td>{{ usuario.perfil.descricao}}</td>
+                   <td><button type="button" v-on:click="excluir(usuario)">Excluir</button></td>
+                   <td><button type="button" v-on:click="alterar(usuario)">Alterar</button></td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+
+    </body>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data:{
+                /*index:"",*/
+                ind:'',
+                usuarios:[],
+                usuario:{id:'',nome:'',senha:'',perfil:{id:'',descricao:''}},
+                perfis:[]   
+            },
+            created:function(){
+                this.$http.get("http://localhost:8080/usucontroller").then(
+                                                function(response) {
+                                                // Se correr tudo bem
+                                                this.usuarios = response.body;
+                                                },
+                                                function(response) {
+                                                // Se der erro
+                                                console.log("não funcionou")
+                                                }
+                                            );
+                this.$http.get("http://localhost:8080/perfilcontroller").then(
+                                                function(response) {
+                                                // Se correr tudo bem
+                                                this.perfis = response.body;
+                                                },
+                                                function(response) {
+                                                // Se der erro
+                                                console.log("não funcionou")
+                                                }
+                                            );                            
+                this.novo();                                
+            },
+            methods:{
+                salvar:function(usuario){
+                    if (usuario.id=="") {
+                        
+                    this.$http.post("http://localhost:8080/usucontroller",this.usuario).then(
+                                            function(response) {
+                                            // Se correr tudo bem
+                                            this.usuarios.push(response.body);
+                                            },
+                                            function(response) {
+                                            // Se der erro
+                                            console.log("não funcionou")
+                                            }
+                                        );
+                    } else {
+                    this.$http.put("http://localhost:8080/usucontroller",this.usuario).then(
+                        function(response) {
+                        // Se correr tudo bem
+                        // this.usuarios[this.ind] = response.body;
+                        this.usuarios.splice(this.ind, 1, response.body);
+                        },
+                        function(response) {
+                        // Se der erro
+                        console.log("não funcionou")
+                        }
+                    );
+                    }
+                    this.novo();
+                },
+                excluir:function(usuarioExcluir){
+                    if (window.confirm("Deseja realmente excluir o usuário: "+usuarioExcluir.nome+ " ?")){
+                                            
+                        this.$http.delete
+                            ("http://localhost:8080/usucontroller/"+usuarioExcluir.id).then(
+                                            function() {
+                                            // Se correr tudo bem
+                                            this.ind = this.usuarios.indexOf(usuarioExcluir);
+                                            this.usuarios.splice(this.ind, 1);
+                                            },
+                                            function() {
+                                            // Se der erro
+                                            console.log("não funcionou")
+                                            }
+                                       );
+                    }
+                    this.novo();
+                   
+                },   
+                alterar:function(usuarioAlterar){
+                   this.ind = this.usuarios.indexOf(usuarioAlterar);                 
+                   this.usuario = Vue.util.extend ({}, usuarioAlterar); 
+                },
+                novo:function(){
+                    this.usuario = {id:'',nome:'',senha:'',perfil:{id:'',descricao:''}};
+                }
+
+            }
+        });
+    </script>
+    
+</html>

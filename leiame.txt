@@ -1,0 +1,26 @@
+Aplicação desenvolvida durante o Curso on-line no YouTbe:
+    Curso: Java Script VUE JS + Java Spring Boot
+    Canal: Fábrica de Programador
+
+Projeto foi inicializado pelo spring inicializr, com as senguintes dependencias:
+    Spring Boot 2.4.1
+    Maven Project
+    Packaging Jar
+    Java 8
+    Spring Web
+    Thymeleaf
+    Lombok
+    Spring Boot DevTools
+    Spring Data JPA 
+    PostgreSQL Driver
+
+Projeto utiliza também a JPQL (Jakarta Persistence Query Language), que não precisa declar nas dependências.
+
+O front-end foi desenvolvido utilizando o Html,CSS e o framework Java Script Vue JS.
+
+Para inicializar, executar (Run As Java Application) a aplicação gerada automaticamente pelo SpringBoot, que esta em: 
+    >src/main/java
+        >com.br.fabricadeprogramador.curso_java_spring
+            >CursoJavaSpringApplication.java
+
+Para executar o front-end pelo Navegador, digitar: localhost:8080
